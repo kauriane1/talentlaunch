@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentLaunch Rwanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --green: #1A5C3A;
+    --green-mid: #2D7A52;
+    --green-light: #3EAA70;
+    --dark: #0D1F17;
+    --cream: #FBF7EF;
+    --text: #1a1a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 60px;
+    background: rgba(13, 31, 23, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-logo span { color: white; }
+
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+
+  .nav-links a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-cta {
+    background: var(--gold) !important;
+    color: var(--dark) !important;
+    padding: 10px 24px !important;
+    border-radius: 4px !important;
+    font-weight: 500 !important;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--gold-light) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--dark);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(45,122,82,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.12) 0%, transparent 50%);
+  }
+
+  .hero-pattern {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--gold) 0, var(--gold) 1px,
+      transparent 0, transparent 50%
+    );
+    background-size: 30px 30px;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    padding-top: 80px;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    color: white;
+    line-height: 1.1;
+    font-weight: 900;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.4s;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-subtitle {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.75;
+    max-width: 480px;
+    margin-bottom: 44px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.6s;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.8s;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--dark);
+    padding: 14px 32px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .btn-ghost {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+
+  .btn-ghost:hover { color: white; }
+  .btn-ghost::after { content: '→'; }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 52px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 1s;
+  }
+
+  .stat {
+    background: rgba(255,255,255,0.04);
+    padding: 28px 20px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* Hero right side: floating cards */
+  .hero-visual {
+    position: relative;
+    height: 500px;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards 1s;
+  }
+
+  .float-card {
+    position: absolute;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .float-card:nth-child(1) {
+    top: 20px; left: 0; width: 260px;
+    animation: float1 5s ease-in-out infinite;
+  }
+
+  .float-card:nth-child(2) {
+    top: 160px; right: 0; width: 220px;
+    animation: float2 6s ease-in-out infinite;
+  }
+
+  .float-card:nth-child(3) {
+    bottom: 40px; left: 30px; width: 240px;
+    animation: float1 7s ease-in-out infinite 0.5s;
+  }
+
+  @keyframes float1 {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  @keyframes float2 {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+
+  .fc-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 12px;
+    background: rgba(201,168,76,0.2);
+  }
+
+  .fc-title { color: white; font-weight: 500; font-size: 0.95rem; margin-bottom: 6px; }
+  .fc-sub { color: rgba(255,255,255,0.45); font-size: 0.8rem; }
+
+  .fc-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(62,170,112,0.2); border: 1px solid rgba(62,170,112,0.3);
+    color: var(--green-light); font-size: 0.75rem;
+    padding: 4px 10px; border-radius: 100px; margin-top: 12px;
+  }
+
+  .fc-pill::before { content: '●'; font-size: 0.5rem; }
+
+  /* FEATURES */
+  .features {
+    padding: 120px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--green-mid);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.2;
+    margin-bottom: 60px;
+  }
+
+  .section-title span { color: var(--green-mid); }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 36px;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green), var(--gold));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .feature-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+  .feature-card:hover::after { transform: scaleX(1); }
+
+  .feature-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--green), var(--green-mid));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 24px;
+  }
+
+  .feature-card:nth-child(2) .feature-icon {
+    background: linear-gradient(135deg, #8B4513, #C9832A);
+  }
+
+  .feature-card:nth-child(3) .feature-icon {
+    background: linear-gradient(135deg, #1a3a6c, #2c7be5);
+  }
+
+  .feature-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--dark);
+  }
+
+  .feature-card p { color: #666; line-height: 1.7; font-size: 0.92rem; font-weight: 300; }
+
+  /* MENTORS STRIP */
+  .mentors-strip {
+    background: var(--dark);
+    padding: 100px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mentors-strip::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(45,122,82,0.2) 0%, transparent 60%);
+  }
+
+  .mentors-inner {
+    max-width: 1200px; margin: 0 auto;
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: center;
+  }
+
+  .mentors-text .section-label { color: var(--gold-light); }
+  .mentors-text .section-title { color: white; margin-bottom: 24px; }
+  .mentors-text p { color: rgba(255,255,255,0.55); font-weight: 300; line-height: 1.75; margin-bottom: 36px; }
+
+  .mentor-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  .mentor-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: background 0.2s;
+  }
+
+  .mentor-card:hover { background: rgba(255,255,255,0.1); }
+
+  .mentor-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-mid), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin: 0 auto 14px;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+
+  .mentor-name { color: white; font-weight: 500; font-size: 0.9rem; margin-bottom: 4px; }
+  .mentor-role { color: var(--gold); font-size: 0.78rem; }
+
+  /* CTA */
+  .cta-section {
+    padding: 120px 60px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--green) 0%, var(--dark) 100%);
+    position: relative; overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: 'TALENT';
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 20vw; font-weight: 900;
+    color: rgba(255,255,255,0.03);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .cta-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+  .cta-inner .section-label { color: var(--gold-light); margin-bottom: 16px; }
+
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    color: white; font-weight: 900;
+    line-height: 1.15; margin-bottom: 20px;
+  }
+
+  .cta-sub { color: rgba(255,255,255,0.6); margin-bottom: 44px; font-weight: 300; line-height: 1.7; }
+
+  /* FOOTER */
+  footer {
+    background: var(--dark);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 40px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer .nav-logo { font-size: 1.1rem; }
+  footer p { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .hero-content { grid-template-columns: 1fr; padding: 24px; padding-top: 100px; }
+    .hero-visual { display: none; }
+    .features { padding: 80px 24px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .mentors-inner { grid-template-columns: 1fr; }
+    .mentor-cards { grid-template-columns: 1fr 1fr; }
+    .cta-section { padding: 80px 24px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Talent<span>Launch</span> Rwanda</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="showcase.html">Showcase</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html" class="nav-cta">Join Now</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-pattern"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-tag">Rwanda's Youth Talent Platform</div>
+      <h1 class="hero-title">
+        Discover &<br><em>Unleash</em><br>Your Talent
+      </h1>
+      <p class="hero-subtitle">
+        A platform built for Rwandan youth to explore their potential, connect with expert mentors, and showcase their skills to the world.
+      </p>
+      <div class="hero-actions">
+        <a href="login.html" class="btn-primary">Get Started Free</a>
+        <a href="showcase.html" class="btn-ghost">Explore Talents</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num" id="statUsers">0</span>
+          <span class="stat-label">Youth Members</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="statMentors">0</span>
+          <span class="stat-label">Mentors</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="statWorkshops">0</span>
+          <span class="stat-label">Workshops</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="float-card">
+        <div class="fc-icon">📸</div>
+        <div class="fc-title">Photography Workshop</div>
+        <div class="fc-sub">Expert-led session</div>
+        <div class="fc-pill">Live Now</div>
+      </div>
+      <div class="float-card">
+        <div class="fc-icon">🎤</div>
+        <div class="fc-title">Public Speaking</div>
+        <div class="fc-sub">12 enrolled today</div>
+        <div class="fc-pill">Trending</div>
+      </div>
+      <div class="float-card">
+        <div class="fc-icon">💻</div>
+        <div class="fc-title">Coding for Beginners</div>
+        <div class="fc-sub">Starts this weekend</div>
+        <div class="fc-pill">Upcoming</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <p class="section-label">What We Offer</p>
+  <h2 class="section-title">Everything you need to<br><span>grow your talent</span></h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🌱</div>
+      <h3>Skill Workshops</h3>
+      <p>Attend hands-on workshops across photography, public speaking, coding, entrepreneurship, and more — taught by real professionals.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤝</div>
+      <h3>Expert Mentors</h3>
+      <p>Connect one-on-one with experienced mentors who guide you, share industry insights, and open doors to new opportunities.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌟</div>
+      <h3>Talent Showcase</h3>
+      <p>Upload your work, build your portfolio, and let your talent speak. Get noticed by organizations, employers, and the community.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MENTORS -->
+<section class="mentors-strip">
+  <div class="mentors-inner">
+    <div class="mentors-text">
+      <p class="section-label">Meet The Mentors</p>
+      <h2 class="section-title">Real experts.<br>Real guidance.</h2>
+      <p>Our mentors are passionate professionals who believe in the power of Rwandan youth. They're here for you.</p>
+      <a href="login.html" class="btn-primary">Connect with a Mentor</a>
+    </div>
+    <div class="mentor-cards">
+      <div class="mentor-card mentor-placeholder">
+        <div class="mentor-avatar" style="background: rgba(255,255,255,0.08); font-size:1.5rem;">🔜</div>
+        <div class="mentor-name" style="color:rgba(255,255,255,0.4);">Coming Soon</div>
+        <div class="mentor-role" style="color:rgba(255,255,255,0.2);">Mentors being onboarded</div>
+      </div>
+      <div class="mentor-card mentor-placeholder">
+        <div class="mentor-avatar" style="background: rgba(255,255,255,0.08); font-size:1.5rem;">🔜</div>
+        <div class="mentor-name" style="color:rgba(255,255,255,0.4);">Coming Soon</div>
+        <div class="mentor-role" style="color:rgba(255,255,255,0.2);">Mentors being onboarded</div>
+      </div>
+      <div class="mentor-card mentor-placeholder">
+        <div class="mentor-avatar" style="background: rgba(255,255,255,0.08); font-size:1.5rem;">🔜</div>
+        <div class="mentor-name" style="color:rgba(255,255,255,0.4);">Coming Soon</div>
+        <div class="mentor-role" style="color:rgba(255,255,255,0.2);">Mentors being onboarded</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <p class="section-label">Start Today</p>
+    <h2 class="cta-title">Your talent deserves to be seen.</h2>
+    <p class="cta-sub">Join hundreds of young Rwandans already growing, connecting, and showcasing on TalentLaunch Rwanda.</p>
+    <a href="login.html" class="btn-primary" style="font-size:1rem; padding: 16px 40px;">Create Your Free Account</a>
+  </div>
+</section>
+
+<footer>
+  <a href="index.html" class="nav-logo">Talent<span>Launch</span> Rwanda</a>
+  <p>© 2026 TalentLaunch Rwanda. Empowering youth across Rwanda.</p>
+</footer>
+
+<script src="/js/api.js"></script>
+<script>
+  async function refreshHomeMetrics() {
+    try {
+      const mentorsRes = await API.getMentors();
+      const workshopsRes = await API.getWorkshops();
+      const talentsRes = await API.getTalents();
+
+      // Users count is best-effort from token/placeholder if not exposed by API
+      const userCount = (talentsRes.talents || []).reduce((unique, t) => {
+        if (!unique.includes(t.user_id)) unique.push(t.user_id);
+        return unique;
+      }, []).length;
+
+      document.getElementById('statUsers').textContent = `${Math.max(userCount, 1)}+`;
+      document.getElementById('statMentors').textContent = `${(mentorsRes.mentors || []).length}+`;
+      document.getElementById('statWorkshops').textContent = `${(workshopsRes.workshops || []).length}+`;
+
+      // Mentors strip cards in home page
+      const mentorsGrid = document.querySelector('.mentor-cards');
+      if (mentorsGrid) {
+        mentorsGrid.innerHTML = '';
+        const mentors = (mentorsRes.mentors || []).slice(0, 3);
+
+        if (mentors.length === 0) {
+          mentorsGrid.innerHTML = '<div class="mentor-card" style="color:white; text-align:center;">No mentors available yet.</div>';
+        } else {
+          mentors.forEach(mentor => {
+            const card = document.createElement('div');
+            card.className = 'mentor-card';
+            const initials = mentor.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            card.innerHTML = `
+              <div class="mentor-avatar">${initials}</div>
+              <div class="mentor-name">${mentor.name}</div>
+              <div class="mentor-role">${mentor.specialty || 'Mentor'}</div>
+            `;
+            mentorsGrid.appendChild(card);
+          });
+        }
+      }
+
+    } catch (err) {
+      console.error('Home metric refresh failed:', err);
+      // Graceful fallback values
+      document.getElementById('statUsers').textContent = '1+';
+      document.getElementById('statMentors').textContent = '0+';
+      document.getElementById('statWorkshops').textContent = '0+';
+    }
+  }
+
+  function enforceLoginFirst() {
+    const links = document.querySelectorAll(
+      'a[href="dashboard.html"], a[href="/dashboard.html"], a[href="./dashboard.html"],' +
+      'a[href="showcase.html"], a[href="/showcase.html"], a[href="./showcase.html"]'
+    );
+    const loggedIn = window.API?.isLoggedIn ? API.isLoggedIn() : !!localStorage.getItem('token');
+
+    links.forEach(link => {
+      if (!loggedIn) {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = 'login.html';
+        });
+      }
+    });
+  }
+
+  refreshHomeMetrics();
+  enforceLoginFirst();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Dashboard – TalentLaunch Rwanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<script src="/js/api.js"></script>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --green: #1A5C3A;
+    --green-mid: #2D7A52;
+    --green-light: #3EAA70;
+    --dark: #0D1F17;
+    --cream: #FBF7EF;
+    --sidebar-w: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F4F1;
+    color: var(--dark);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+  }
+
+  .sidebar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    text-decoration: none;
+    padding: 0 28px;
+    margin-bottom: 40px;
+    display: block;
+  }
+
+  .sidebar-logo span { color: white; }
+
+  .sidebar-section { padding: 0 16px; margin-bottom: 28px; }
+  .sidebar-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.25); padding: 0 12px; margin-bottom: 8px; }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-link:hover { background: rgba(255,255,255,0.07); color: white; }
+  .sidebar-link.active { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .sidebar-link .icon { font-size: 1.1rem; width: 22px; }
+
+  .sidebar-bottom { margin-top: auto; padding: 0 16px; }
+  .user-pill { display: flex; align-items: center; gap: 12px; padding: 14px; background: rgba(255,255,255,0.06); border-radius: 10px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--green-mid), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: white; font-weight: 600; }
+  .user-name { color: white; font-size: 0.88rem; font-weight: 500; }
+  .user-role { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+
+  .main { margin-left: var(--sidebar-w); flex:1; padding: 40px 44px; max-width: calc(100% - var(--sidebar-w)); }
+
+  .page-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--dark); margin-bottom: 8px; }
+  .page-header p { color: #777; margin-bottom: 28px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .card h2 { margin-bottom: 16px; font-size: 1.1rem; }
+
+  .card form { display: grid; gap: 10px; }
+  .card input, .card textarea, .card select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #ddd; }
+  .card button { margin-top: 8px; background: var(--green); color: white; padding: 10px 16px; border: 0; border-radius: 8px; cursor: pointer; }
+
+  .table-wrap { max-height: 280px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px; font-size: 0.9rem; border-bottom: 1px solid #eee; text-align: left; }
+  th { color: #444; }
+  .btn-del { background: rgba(220,80,80,0.12); color: #c0504d; border: 0; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+
+  .info { margin: 14px 0; padding: 12px; border-radius: 8px; background: #fff8e6; border: 1px solid #f3e1b6; color: #8b6a22; }
+
+  .toast { position: fixed; top: 20px; right: 20px; background: #1A5C3A; color: white; padding: 12px 16px; border-radius: 8px; transform: translateX(130%); transition: transform 0.25s; z-index: 999; }
+  .toast.show { transform: translateX(0); }
+
+  @media (max-width: 1000px) { .grid-2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">Talent<span>Launch</span></a>
+  <div class="sidebar-section">
+    <p class="sidebar-label">Admin</p>
+    <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+    <a href="admin.html" class="sidebar-link active"><span class="icon">🛠</span> Admin</a>
+    <a href="workshops.html" class="sidebar-link"><span class="icon">📚</span> Workshops</a>
+    <a href="mentors.html" class="sidebar-link"><span class="icon">🤝</span> Mentors</a>
+  </div>
+  <div class="sidebar-section">
+    <p class="sidebar-label">Account</p>
+    <a href="profile.html" class="sidebar-link"><span class="icon">👤</span> Profile</a>
+    <a href="settings.html" class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+    <a href="login.html?logout=1" class="sidebar-link sign-out"><span class="icon">🚪</span> Sign Out</a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar" id="sideAvatar">AD</div>
+      <div><div class="user-name" id="sideName">Admin</div><div class="user-role" id="sideRole">Admin</div></div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <h1>Admin Dashboard</h1>
+    <p>Only users with the admin role can access and manage mentors and workshops here.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Mentor Management</h2>
+      <form id="mentorForm">
+        <input type="text" id="mtName" placeholder="Name" required />
+        <input type="email" id="mtEmail" placeholder="Email" required />
+        <input type="text" id="mtSpecialty" placeholder="Specialty" required />
+        <label style="font-size:0.8rem;margin-top:8px;color:#555;">Mentor avatar (optional)</label>
+        <input type="file" id="mtAvatar" accept="image/*" />
+        <input type="text" id="mtContact" placeholder="Contact info" />
+        <textarea id="mtBio" placeholder="Bio" rows="3"></textarea>
+        <button type="submit">Add Mentor</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Workshop Management</h2>
+      <form id="workshopForm">
+        <input type="text" id="wsTitle" placeholder="Title" required />
+        <textarea id="wsDescription" placeholder="Description" rows="3" required></textarea>
+        <input type="datetime-local" id="wsDate" required />
+        <input type="text" id="wsLocation" placeholder="Location" />
+        <input type="number" id="wsCapacity" placeholder="Capacity" min="1" value="30" />
+        <select id="wsStatus">
+          <option value="upcoming">upcoming</option>
+          <option value="live">live</option>
+          <option value="completed">completed</option>
+          <option value="cancelled">cancelled</option>
+        </select>
+        <input type="text" id="wsMentorId" placeholder="Mentor ID" />
+        <button type="submit">Add Workshop</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Mentors</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Specialty</th><th>Email</th><th>Action</th></tr></thead>
+          <tbody id="mentorsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Workshops</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Title</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="workshopsTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  async function ensureAdmin() {
+    if (!API.isLoggedIn()) {
+      window.location.href = 'login.html';
+      return false;
+    }
+
+    try {
+      const res = await API.getMe();
+      if (res.user.role !== 'admin') {
+        showToast('Access denied: admin only');
+        setTimeout(() => { window.location.href='dashboard.html'; }, 800);
+        return false;
+      }
+
+      document.getElementById('sideName').textContent = res.user.name;
+      document.getElementById('sideRole').textContent = res.user.role;
+      document.getElementById('sideAvatar').textContent = res.user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+
+      return true;
+    } catch (err) {
+      console.error(err);
+      API.logout();
+      return false;
+    }
+  }
+
+  async function refreshData() {
+    try {
+      const mentorData = await API.getMentors();
+      const workshopData = await API.getWorkshops();
+
+      const mentorsTable = document.getElementById('mentorsTable');
+      mentorsTable.innerHTML = '';
+      mentorData.mentors.forEach(m => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${m.id}</td><td>${m.name}</td><td>${m.specialty}</td><td>${m.email}</td><td><button class='btn-del' data-id='${m.id}' data-type='mentor'>Delete</button></td>`;
+        mentorsTable.appendChild(row);
+      });
+
+      const workshopsTable = document.getElementById('workshopsTable');
+      workshopsTable.innerHTML = '';
+      workshopData.workshops.forEach(w => {
+        const date = new Date(w.date).toLocaleString();
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${w.id}</td><td>${w.title}</td><td>${date}</td><td>${w.status}</td><td><button class='btn-del' data-id='${w.id}' data-type='workshop'>Delete</button></td>`;
+        workshopsTable.appendChild(row);
+      });
+
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to load admin data');
+    }
+  }
+
+  async function addMentor(e) {
+    e.preventDefault();
+    const name = document.getElementById('mtName').value.trim();
+    const email = document.getElementById('mtEmail').value.trim();
+    const specialty = document.getElementById('mtSpecialty').value.trim();
+    const contact_info = document.getElementById('mtContact').value.trim();
+    const bio = document.getElementById('mtBio').value.trim();
+
+    if (!name || !email || !specialty) {
+      showToast('Name, email, and specialty are required');
+      return;
+    }
+
+    try {
+      const avatarFile = document.getElementById('mtAvatar').files[0];
+      await API.createMentor({ name, email, specialty, contact_info, bio }, avatarFile);
+      showToast('Mentor added');
+      document.getElementById('mentorForm').reset();
+      localStorage.setItem('mentor_updated', Date.now());
+      await refreshData();
+
+      // Cross-tab update for users viewing mentor lists
+      window.dispatchEvent(new StorageEvent('storage', { key: 'mentor_updated', newValue: String(Date.now()) }));
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to add mentor');
+    }
+  }
+
+  async function addWorkshop(e) {
+    e.preventDefault();
+    const title = document.getElementById('wsTitle').value.trim();
+    const description = document.getElementById('wsDescription').value.trim();
+    const date = document.getElementById('wsDate').value;
+    const location = document.getElementById('wsLocation').value.trim();
+    const capacity = parseInt(document.getElementById('wsCapacity').value, 10) || 30;
+    const status = document.getElementById('wsStatus').value;
+    const mentor_id = parseInt(document.getElementById('wsMentorId').value, 10) || null;
+
+    if (!title || !description || !date) {
+      showToast('Title, description, and date are required');
+      return;
+    }
+
+    try {
+      const payload = { title, description, date, location, capacity, status };
+      if (mentor_id) payload.mentor_id = mentor_id;
+
+      await API.createWorkshop(payload);
+      showToast('Workshop added');
+      document.getElementById('workshopForm').reset();
+      localStorage.setItem('workshop_updated', Date.now());
+      window.dispatchEvent(new StorageEvent('storage', { key: 'workshop_updated', newValue: String(Date.now()) }));
+      await refreshData();
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to add workshop');
+    }
+  }
+
+  async function handleDelete(event) {
+    const button = event.target.closest('.btn-del');
+    if (!button) return;
+    const id = button.dataset.id;
+    const type = button.dataset.type;
+
+    if (!confirm(`Delete ${type} #${id}?`)) return;
+
+    try {
+      if (type === 'mentor') {
+        await API.deleteMentor(id);
+      } else {
+        await API.deleteWorkshop(id);
+      }
+      showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted`);
+      await refreshData();
+    } catch (err) {
+      console.error(err);
+      showToast('Delete failed');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (!await ensureAdmin()) return;
+    await refreshData();
+
+    document.getElementById('mentorForm').addEventListener('submit', addMentor);
+    document.getElementById('workshopForm').addEventListener('submit', addWorkshop);
+    document.getElementById('mentorsTable').addEventListener('click', handleDelete);
+    document.getElementById('workshopsTable').addEventListener('click', handleDelete);
+  });
+</script>
+</body>
+</html>

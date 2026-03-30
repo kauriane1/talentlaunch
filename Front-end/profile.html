@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile – TalentLaunch Rwanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="/js/api.js"></script>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --green: #1A5C3A;
+    --green-mid: #2D7A52;
+    --green-light: #3EAA70;
+    --dark: #0D1F17;
+    --cream: #FBF7EF;
+    --sidebar-w: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F4F1;
+    display: flex;
+    min-height: 100vh;
+    color: var(--dark);
+  }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    z-index: 50;
+  }
+
+  .sidebar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    text-decoration: none;
+    padding: 0 28px;
+    margin-bottom: 40px;
+    display: block;
+  }
+
+  .sidebar-logo span { color: white; }
+
+  .sidebar-section {
+    padding: 0 16px;
+    margin-bottom: 28px;
+  }
+
+  .sidebar-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.25);
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-link:hover { background: rgba(255,255,255,0.07); color: white; }
+  .sidebar-link.active { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .sidebar-link .icon { font-size: 1.1rem; width: 22px; }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 0 16px;
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-mid), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: white; font-weight: 600;
+  }
+
+  .user-name { color: white; font-size: 0.88rem; font-weight: 500; }
+  .user-role { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 40px 44px;
+    max-width: calc(100% - var(--sidebar-w));
+  }
+
+  .page-header { margin-bottom: 36px; }
+
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .page-header p { color: #888; font-size: 0.9rem; margin-top: 6px; font-weight: 300; }
+
+  .profile-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+    max-width: 600px;
+  }
+
+  .profile-header {
+    background: linear-gradient(135deg, var(--green-mid), var(--green-light));
+    padding: 60px 40px 40px;
+    text-align: center;
+    color: white;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 4px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 20px;
+    overflow: hidden;
+  }
+
+  .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .profile-role {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin-bottom: 24px;
+  }
+
+  .profile-body {
+    padding: 40px;
+  }
+
+  .profile-section {
+    margin-bottom: 32px;
+  }
+
+  .profile-section-title {
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--green-mid);
+  }
+
+  .profile-info {
+    line-height: 1.8;
+  }
+
+  .profile-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+  }
+
+  .profile-row:last-child { border-bottom: none; }
+  .profile-row-label { color: #888; font-weight: 500; }
+  .profile-row-value { color: var(--dark); font-weight: 600; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .stat {
+    background: rgba(45,122,82,0.05);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--green-mid);
+    display: block;
+  }
+
+  .stat-label { color: #888; font-size: 0.85rem; margin-top: 4px; }
+
+  .btn-edit {
+    background: var(--green);
+    color: white;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  .btn-edit:hover { background: var(--green-mid); }
+
+  .toast {
+    position: fixed; top: 24px; right: 24px;
+    background: var(--dark); color: white;
+    padding: 14px 22px; border-radius: 10px;
+    font-size: 0.88rem; border-left: 4px solid var(--green-light);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transform: translateX(120%); transition: transform 0.3s;
+    z-index: 999; max-width: 300px;
+  }
+
+  .toast.show { transform: translateX(0); }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; max-width: 100%; padding: 24px; }
+    .profile-card { max-width: 100%; }
+    .stats-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">Talent<span>Launch</span></a>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Main</p>
+    <a href="dashboard.html" class="sidebar-link">
+      <span class="icon">🏠</span> Dashboard
+    </a>
+    <a href="showcase.html" class="sidebar-link">
+      <span class="icon">⭐</span> My Showcase
+    </a>
+    <a href="workshops.html" class="sidebar-link">
+      <span class="icon">📚</span> Workshops
+    </a>
+    <a href="mentors.html" class="sidebar-link">
+      <span class="icon">🤝</span> Mentors
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Account</p>
+    <a href="profile.html" class="sidebar-link active">
+      <span class="icon">👤</span> Profile
+    </a>
+    <a href="settings.html" class="sidebar-link">
+      <span class="icon">⚙️</span> Settings
+    </a>
+    <a href="login.html?logout=1" class="sidebar-link sign-out">
+      <span class="icon">🚪</span> Sign Out
+    </a>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar">YT</div>
+      <div>
+        <div class="user-name">Youth Member</div>
+        <div class="user-role">Kigali, Rwanda</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <h1>👤 My Profile</h1>
+    <p>View your account information and profile details.</p>
+  </div>
+
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="profile-avatar" id="avatar">👤</div>
+      <div class="profile-name" id="profileName">Your Name</div>
+      <div class="profile-role" id="profileRole">Youth Member</div>
+    </div>
+
+    <div class="profile-body">
+      <div class="profile-section">
+        <div class="profile-section-title">Account Information</div>
+        <div class="profile-info">
+          <div class="profile-row">
+            <span class="profile-row-label">Name</span>
+            <span class="profile-row-value" id="infoName">—</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-row-label">Email</span>
+            <span class="profile-row-value" id="infoEmail">—</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-row-label">Location</span>
+            <span class="profile-row-value" id="infoLocation">—</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-row-label">Role</span>
+            <span class="profile-row-value" id="infoRole">—</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-row-label">Joined</span>
+            <span class="profile-row-value" id="infoJoined">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-section-title">Your Activity</div>
+        <div class="stats-grid">
+          <div class="stat">
+            <span class="stat-number" id="talentsCount">0</span>
+            <div class="stat-label">Talents Shared</div>
+          </div>
+          <div class="stat">
+            <span class="stat-number" id="workshopsCount">0</span>
+            <div class="stat-label">Workshops Joined</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-edit" onclick="goToSettings()">Edit Profile Settings →</button>
+    </div>
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Check authentication
+  if (!API.isLoggedIn()) {
+    window.location.href = 'login.html';
+  }
+
+  let currentUser = null;
+
+  // Initialize
+  async function initialize() {
+    try {
+      const userData = await API.getMe();
+      currentUser = userData.user;
+      updateUserInfo(userData.user);
+      loadProfileData(userData.user);
+      await loadStats();
+    } catch (error) {
+      console.error('Failed to initialize:', error);
+      if (error.message.includes('expired') || error.message.includes('invalid')) {
+        API.logout();
+      }
+    }
+  }
+
+  function updateUserInfo(user) {
+    const userPill = document.querySelector('.user-pill');
+    const avatar = userPill.querySelector('.user-avatar');
+    const name = userPill.querySelector('.user-name');
+    const role = userPill.querySelector('.user-role');
+
+    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    if (user.avatar_url) {
+      avatar.innerHTML = `<img src="${user.avatar_url}" alt="${user.name} avatar">`;
+    } else {
+      avatar.textContent = initials;
+    }
+
+    name.textContent = user.name;
+    role.textContent = user.location || 'Rwanda';
+  }
+
+  function loadProfileData(user) {
+    // Header info
+    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    const avatar = document.getElementById('avatar');
+    if (user.avatar_url) {
+      avatar.innerHTML = `<img src="${user.avatar_url}" alt="${user.name} avatar">`;
+    } else {
+      avatar.textContent = initials;
+    }
+
+    document.getElementById('profileName').textContent = user.name;
+    document.getElementById('profileRole').textContent = user.location || 'Rwanda';
+
+    // Profile rows
+    document.getElementById('infoName').textContent = user.name;
+    document.getElementById('infoEmail').textContent = user.email;
+    document.getElementById('infoLocation').textContent = user.location || 'Not specified';
+    document.getElementById('infoRole').textContent = user.role === 'admin' ? 'Admin' : 'Youth Member';
+    
+    const joinDate = new Date(user.created_at).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    document.getElementById('infoJoined').textContent = joinDate;
+  }
+
+  async function loadStats() {
+    try {
+      // Load talents
+      const talentsData = await API.getTalents();
+      const userTalents = talentsData.talents.filter(t => t.user_id === currentUser.id);
+      document.getElementById('talentsCount').textContent = userTalents.length;
+
+      // Load workshops (assuming enrolled count)
+      const workshopsData = await API.getWorkshops();
+      document.getElementById('workshopsCount').textContent = workshopsData.workshops.length || 0;
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  }
+
+  function goToSettings() {
+    window.location.href = 'settings.html';
+  }
+
+  window.addEventListener('storage', (event) => {
+    if (event.key === 'profile_updated') {
+      initialize();
+    }
+  });
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  initialize();
+</script>
+
+</body>
+</html>

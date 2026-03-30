@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard – TalentLaunch Rwanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="/js/api.js"></script>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --green: #1A5C3A;
+    --green-mid: #2D7A52;
+    --green-light: #3EAA70;
+    --dark: #0D1F17;
+    --cream: #FBF7EF;
+    --sidebar-w: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F4F1;
+    display: flex;
+    min-height: 100vh;
+    color: var(--dark);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    z-index: 50;
+  }
+
+  .sidebar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    text-decoration: none;
+    padding: 0 28px;
+    margin-bottom: 40px;
+    display: block;
+  }
+
+  .sidebar-logo span { color: white; }
+
+  .sidebar-section {
+    padding: 0 16px;
+    margin-bottom: 28px;
+  }
+
+  .sidebar-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.25);
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-link:hover { background: rgba(255,255,255,0.07); color: white; }
+  .sidebar-link.active { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .sidebar-link .icon { font-size: 1.1rem; width: 22px; }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 0 16px;
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-mid), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: white; font-weight: 600;
+  }
+
+  .user-name { color: white; font-size: 0.88rem; font-weight: 500; }
+  .user-role { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+
+  /* MAIN */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 40px 44px;
+    max-width: calc(100% - var(--sidebar-w));
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+
+  .topbar-greeting h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .topbar-greeting p { color: #888; font-size: 0.9rem; margin-top: 4px; font-weight: 300; }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .user-avatar-top {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-mid), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .user-avatar-top img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .topbar-btn {
+    background: var(--green);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+
+  .topbar-btn:hover { background: var(--green-mid); }
+
+  /* STAT CARDS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: transform 0.2s;
+  }
+
+  .stat-card:hover { transform: translateY(-3px); }
+
+  .stat-card-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; margin-bottom: 16px;
+  }
+
+  .stat-card:nth-child(1) .stat-card-icon { background: rgba(45,122,82,0.12); }
+  .stat-card:nth-child(2) .stat-card-icon { background: rgba(201,168,76,0.15); }
+  .stat-card:nth-child(3) .stat-card-icon { background: rgba(44,123,229,0.12); }
+  .stat-card:nth-child(4) .stat-card-icon { background: rgba(220,80,80,0.1); }
+
+  .stat-card-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark);
+    display: block;
+  }
+
+  .stat-card-label { color: #888; font-size: 0.82rem; margin-top: 4px; }
+
+  /* GRID */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .panel {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .panel-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .panel-link {
+    font-size: 0.82rem;
+    color: var(--green-mid);
+    text-decoration: none;
+  }
+
+  /* WORKSHOPS */
+  .workshop-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .workshop-item:last-child { border-bottom: none; }
+
+  .ws-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--green), var(--green-mid));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+
+  .ws-info { flex: 1; }
+  .ws-name { font-weight: 500; font-size: 0.92rem; color: var(--dark); }
+  .ws-meta { color: #aaa; font-size: 0.78rem; margin-top: 2px; }
+
+  .ws-tag {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .ws-tag.live { background: rgba(62,170,112,0.12); color: var(--green-mid); }
+  .ws-tag.upcoming { background: rgba(201,168,76,0.12); color: #9a7a28; }
+
+  /* MENTORS */
+  .mentor-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 6px;
+    padding: 12px 8px;
+  }
+
+  .mentor-row:hover { background: #f9f9f9; }
+  .mentor-row:last-child { border-bottom: none; }
+
+  .mentor-av {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+    border: 2px solid #eee;
+  }
+
+  .mentor-info { flex: 1; }
+  .mentor-nm { font-weight: 500; font-size: 0.9rem; }
+  .mentor-sp { color: #aaa; font-size: 0.78rem; }
+
+  .mentor-btn {
+    font-size: 0.78rem;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1.5px solid var(--green-mid);
+    color: var(--green-mid);
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .mentor-btn:hover { background: var(--green-mid); color: white; }
+
+  /* SHOWCASE CTA */
+  .showcase-cta {
+    background: linear-gradient(135deg, var(--dark), var(--green));
+    border-radius: 16px;
+    padding: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0;
+  }
+
+  .showcase-cta h3 {
+    font-family: 'Playfair Display', serif;
+    color: white; font-size: 1.4rem; margin-bottom: 8px;
+  }
+
+  .showcase-cta p { color: rgba(255,255,255,0.55); font-size: 0.88rem; font-weight: 300; }
+
+  .showcase-cta a {
+    background: var(--gold);
+    color: var(--dark);
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+
+  .showcase-cta a:hover { background: var(--gold-light); }
+
+  @media (max-width: 1024px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; max-width: 100%; padding: 24px; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .showcase-cta { flex-direction: column; gap: 20px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">Talent<span>Launch</span></a>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Main</p>
+    <a href="dashboard.html" class="sidebar-link active">
+      <span class="icon">🏠</span> Dashboard
+    </a>
+    <a href="showcase.html" class="sidebar-link">
+      <span class="icon">⭐</span> My Showcase
+    </a>
+    <a href="workshops.html" class="sidebar-link">
+      <span class="icon">📚</span> Workshops
+    </a>
+    <a href="mentors.html" class="sidebar-link">
+      <span class="icon">🤝</span> Mentors
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Account</p>
+    <a href="profile.html" class="sidebar-link">
+      <span class="icon">👤</span> Profile
+    </a>
+    <a href="settings.html" class="sidebar-link">
+      <span class="icon">⚙️</span> Settings
+    </a>
+    <a href="login.html?logout=1" class="sidebar-link sign-out">
+      <span class="icon">🚪</span> Sign Out
+    </a>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar">YT</div>
+      <div>
+        <div class="user-name">Youth Member</div>
+        <div class="user-role">Kigali, Rwanda</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-greeting">
+      <h1>Welcome!</h1>
+      <p>Here's what's happening on TalentLaunch today.</p>
+    </div>
+    <div class="topbar-right">
+      <div class="user-avatar-top" onclick="window.location.href='profile.html'">U</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-card-icon">🌱</div>
+      <span class="stat-card-num" id="d-workshops">0</span>
+      <div class="stat-card-label">Workshops Joined</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon">⭐</div>
+      <span class="stat-card-num" id="d-talents">0</span>
+      <div class="stat-card-label">Talents Showcased</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon">👁️</div>
+      <span class="stat-card-num" id="d-views">0</span>
+      <div class="stat-card-label">Profile Views</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon">🤝</div>
+      <span class="stat-card-num" id="d-mentors">0</span>
+      <div class="stat-card-label">Active Mentors</div>
+    </div>
+  </div>
+
+  <!-- WORKSHOPS + MENTORS -->
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Upcoming Workshops</span>
+        <a href="workshops.html" class="panel-link">View all →</a>
+      </div>
+      <div class="workshop-item">
+        <div class="ws-icon">📸</div>
+        <div class="ws-info">
+          <div class="ws-name">Photography Basics</div>
+          <div class="ws-meta">Sat, Mar 14 · Expert Instructor</div>
+        </div>
+        <span class="ws-tag live">Live</span>
+      </div>
+      <div class="workshop-item">
+        <div class="ws-icon" style="background: linear-gradient(135deg,#8B4513,#C9832A);">🎤</div>
+        <div class="ws-info">
+          <div class="ws-name">Public Speaking</div>
+          <div class="ws-meta">Sun, Mar 15 · Expert Instructor</div>
+        </div>
+        <span class="ws-tag upcoming">Soon</span>
+      </div>
+      <div class="workshop-item">
+        <div class="ws-icon" style="background: linear-gradient(135deg,#1a3a6c,#2c7be5);">💻</div>
+        <div class="ws-info">
+          <div class="ws-name">Coding for Beginners</div>
+          <div class="ws-meta">Fri, Mar 20 · Expert Instructor</div>
+        </div>
+        <span class="ws-tag upcoming">Upcoming</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Mentors</span>
+        <a href="mentors.html" class="panel-link">View more →</a>
+      </div>
+      <div style="text-align:center; padding: 40px 20px; color: #bbb;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">🤝</div>
+        <p style="font-size:0.88rem; color:#aaa; font-weight:300; line-height:1.6;">No mentors added yet.<br>Once you onboard mentors, they'll appear here.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOWCASE CTA -->
+  <div class="showcase-cta">
+    <div>
+      <h3>Ready to share your talent?</h3>
+      <p>Upload your work and let the world see what you can do.</p>
+    </div>
+    <a href="showcase.html">Go to Showcase →</a>
+  </div>
+</main>
+
+<script>
+  const loggedIn = window.API?.isLoggedIn ? API.isLoggedIn() : !!localStorage.getItem('token');
+  if (!loggedIn) {
+    window.location.href = 'login.html';
+  }
+
+  // Load user data and dashboard stats
+  async function loadDashboard() {
+    try {
+      // Get current user
+      const userData = await API.getMe();
+      updateUserInfo(userData.user);
+
+      // Load stats
+      await loadStats();
+
+      // Load workshops
+      await loadWorkshops();
+
+      // Load mentors
+      await loadMentors();
+
+    } catch (error) {
+      console.error('Failed to load dashboard:', error);
+      if (error.message.includes('expired') || error.message.includes('invalid')) {
+        API.logout();
+      }
+    }
+  }
+
+  function updateUserInfo(user) {
+    // Update sidebar user info
+    const userPill = document.querySelector('.user-pill');
+    const avatar = userPill.querySelector('.user-avatar');
+    const name = userPill.querySelector('.user-name');
+    const role = userPill.querySelector('.user-role');
+
+    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    if (user.avatar_url) {
+      avatar.innerHTML = `<img src="${user.avatar_url}" alt="${user.name} avatar">`;
+    } else {
+      avatar.textContent = initials;
+    }
+
+    name.textContent = user.name;
+    role.textContent = user.location || 'Rwanda';
+
+    // Update topbar avatar
+    const topAvatar = document.querySelector('.user-avatar-top');
+    if (user.avatar_url) {
+      topAvatar.innerHTML = `<img src="${user.avatar_url}" alt="${user.name} avatar">`;
+    } else {
+      topAvatar.textContent = initials;
+    }
+
+    // Update greeting
+    const greeting = document.querySelector('.topbar-greeting h1');
+    const firstName = user.name ? user.name.split(' ')[0] : '';
+    greeting.textContent = firstName ? `Welcome, ${firstName}!` : 'Welcome!';
+  }
+
+  async function loadStats() {
+    try {
+      const userData = await API.getMe();
+      const user = userData.user;
+
+      // Get user's enrolled workshops
+      const myWorkshops = await API.getMyWorkshops();
+
+      // Get user's talents
+      const talents = await API.getTalents();
+      const userTalents = talents.talents.filter(t => t.user_id === user.id);
+
+      // Get total mentors
+      const mentors = await API.getMentors();
+
+      // Update stats
+      document.getElementById('d-workshops').textContent = myWorkshops.workshops.length;
+      document.getElementById('d-talents').textContent = userTalents.length;
+      document.getElementById('d-views').textContent = userTalents.reduce((sum, t) => sum + (t.views || 0), 0);
+      document.getElementById('d-mentors').textContent = mentors.mentors.length;
+
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  }
+
+  async function loadWorkshops() {
+    try {
+      const data = await API.getWorkshops('upcoming');
+      const workshops = data.workshops.slice(0, 3); // Show first 3
+
+      const container = document.querySelector('.panel:first-child .panel-body') || document.querySelector('.panel:first-child');
+      let html = '';
+
+      if (workshops.length === 0) {
+        html = '<div style="text-align:center; padding: 40px 20px; color: #bbb;"><div style="font-size:2.5rem; margin-bottom:12px;">📚</div><p style="font-size:0.88rem; color:#aaa; font-weight:300;">No workshops available yet.</p></div>';
+      } else {
+        workshops.forEach(workshop => {
+          const date = new Date(workshop.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+          const status = workshop.status === 'live' ? 'live' : 'upcoming';
+          const statusText = workshop.status === 'live' ? 'Live' : 'Upcoming';
+
+          html += `
+            <div class="workshop-item">
+              <div class="ws-icon">📚</div>
+              <div class="ws-info">
+                <div class="ws-name">${workshop.title}</div>
+                <div class="ws-meta">${date} · ${workshop.mentor_name || 'Instructor'}</div>
+              </div>
+              <span class="ws-tag ${status}">${statusText}</span>
+            </div>
+          `;
+        });
+      }
+
+      // Replace existing workshop items
+      const existingItems = container.querySelectorAll('.workshop-item');
+      existingItems.forEach(item => item.remove());
+
+      // Add new items after the header
+      const header = container.querySelector('.panel-header');
+      header.insertAdjacentHTML('afterend', html);
+
+    } catch (error) {
+      console.error('Failed to load workshops:', error);
+    }
+  }
+
+  async function loadMentors() {
+    try {
+      const data = await API.getMentors();
+      const mentors = data.mentors.slice(0, 3); // Show first 3
+
+      const container = document.querySelector('.panel:last-child .panel-body') || document.querySelector('.panel:last-child');
+
+      if (mentors.length === 0) {
+        // Keep the existing "no mentors" message
+        return;
+      }
+
+      let html = '';
+      mentors.forEach(mentor => {
+        const avatarHtml = mentor.avatar_url
+          ? `<img src="${mentor.avatar_url}" alt="${mentor.name}">`
+          : mentor.name.split(' ').map(n => n[0]).join('');
+
+        html += `
+          <div class="mentor-row">
+            <div class="mentor-av">${avatarHtml}</div>
+            <div class="mentor-info">
+              <div class="mentor-nm">${mentor.name}</div>
+              <div class="mentor-sp">${mentor.specialty}</div>
+            </div>
+            <button class="mentor-btn" onclick="window.location.href='mentors.html'">View</button>
+          </div>
+        `;
+      });
+
+      // Replace the "no mentors" content
+      const noMentorsDiv = container.querySelector('div[style*="text-align:center"]');
+      if (noMentorsDiv) {
+        noMentorsDiv.outerHTML = html;
+      }
+
+    } catch (error) {
+      console.error('Failed to load mentors:', error);
+    }
+  }
+
+  // Sign out functionality
+  document.querySelectorAll('a.sign-out').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      API.logout();
+    });
+  });
+
+  // Load dashboard when page loads
+  document.addEventListener('DOMContentLoaded', loadDashboard);
+</script>
+
+</body>
+</html>

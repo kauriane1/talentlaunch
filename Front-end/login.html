@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login – TalentLaunch Rwanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --green: #1A5C3A;
+    --green-mid: #2D7A52;
+    --green-light: #3EAA70;
+    --dark: #0D1F17;
+    --cream: #FBF7EF;
+    --text: #1a1a1a;
+    --error: #dc3545;
+    --success: #28a745;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .auth-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    overflow: hidden;
+  }
+
+  .auth-header {
+    background: var(--dark);
+    color: white;
+    padding: 40px 32px;
+    text-align: center;
+  }
+
+  .auth-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .auth-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .auth-tabs {
+    display: flex;
+    background: var(--cream);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+    border-bottom: 3px solid transparent;
+  }
+
+  .auth-tab.active {
+    background: white;
+    border-bottom-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .auth-form {
+    padding: 32px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .form-error {
+    color: var(--error);
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+
+  .form-success {
+    color: var(--success);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  .auth-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .auth-btn:hover {
+    background: var(--gold-light);
+  }
+
+  .auth-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .auth-footer {
+    text-align: center;
+    padding: 20px 32px;
+    background: var(--cream);
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .auth-footer a {
+    color: var(--green);
+    text-decoration: none;
+  }
+
+  .auth-footer a:hover {
+    text-decoration: underline;
+  }
+
+  .loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 480px) {
+    .auth-container {
+      margin: 20px;
+      max-width: none;
+    }
+
+    .auth-header {
+      padding: 32px 24px;
+    }
+
+    .auth-form {
+      padding: 24px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-header">
+      <div class="auth-logo">TalentLaunch <span>Rwanda</span></div>
+      <div class="auth-subtitle">Empowering Rwandan Youth</div>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" data-tab="login">Sign In</div>
+      <div class="auth-tab" data-tab="register">Create Account</div>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="auth-form">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="loginEmail" required>
+        <div class="form-error" id="loginEmailError"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="loginPassword" required>
+        <div class="form-error" id="loginPasswordError"></div>
+      </div>
+
+      <button type="submit" class="auth-btn" id="loginBtn">
+        <span id="loginBtnText">Sign In</span>
+      </button>
+
+      <div class="form-success" id="loginSuccess"></div>
+    </form>
+
+    <!-- Register Form -->
+    <form id="registerForm" class="auth-form" style="display: none;">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="registerName" required>
+        <div class="form-error" id="registerNameError"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="registerEmail" required>
+        <div class="form-error" id="registerEmailError"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="registerPassword" required minlength="6">
+        <div class="form-error" id="registerPasswordError"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Location (Optional)</label>
+        <input type="text" class="form-input" id="registerLocation" placeholder="e.g., Kigali">
+      </div>
+
+      <button type="submit" class="auth-btn" id="registerBtn">
+        <span id="registerBtnText">Create Account</span>
+      </button>
+
+      <div class="form-success" id="registerSuccess"></div>
+    </form>
+
+    <div class="auth-footer">
+      <a href="index.html">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+const AUTH_BASE = window.location.protocol === 'file:'
+    ? 'http://localhost:5000/api/auth'
+    : '/api/auth';
+  const storageKey = 'token';
+
+  if (window.location.protocol === 'file:') {
+    alert('Please open this page through http://localhost:5000/login.html after starting the server.');
+  }
+
+    function setToken(token) {
+      localStorage.setItem(storageKey, token);
+    }
+
+    function getToken() {
+      return localStorage.getItem(storageKey);
+    }
+
+    function isLoggedIn() {
+      return !!getToken();
+    }
+
+    function clearToken() {
+      localStorage.removeItem(storageKey);
+    }
+
+    const logoutRequested = new URLSearchParams(window.location.search).get('logout') === '1';
+    if (logoutRequested) {
+      clearToken();
+      const successElement = document.getElementById('loginSuccess');
+      if (successElement) {
+        successElement.textContent = 'Signed out successfully. Please log in again.';
+      }
+      window.history.replaceState({}, '', 'login.html');
+    }
+
+    function clearFormMessages() {
+      document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+      document.querySelectorAll('.form-success').forEach(el => el.textContent = '');
+    }
+
+    function showError(elementId, message) {
+      document.getElementById(elementId).textContent = message || 'Something went wrong.';
+    }
+
+    async function postJson(endpoint, body) {
+      const response = await fetch(`${AUTH_BASE}/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json().catch(() => ({ success: false, message: 'Invalid server response.' }));
+      if (!response.ok) {
+        const errorMessage = data.message || (data.errors && data.errors[0] && data.errors[0].msg) || 'Request failed.';
+        throw new Error(errorMessage);
+      }
+      return data;
+    }
+
+    function switchToLoginTab() {
+      document.querySelector('[data-tab="login"]').click();
+    }
+
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab + 'Form').style.display = 'block';
+      });
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      clearFormMessages();
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      const btn = document.getElementById('loginBtn');
+      const btnText = document.getElementById('loginBtnText');
+      btn.disabled = true;
+      btnText.innerHTML = '<span class="loading"></span>Signing in...';
+
+      try {
+        const result = await postJson('login', { email, password });
+        setToken(result.token);
+        document.getElementById('loginSuccess').textContent = 'Login successful! Redirecting...';
+
+        const role = result.user && result.user.role ? result.user.role : 'youth';
+        const redirectUrl = role === 'admin' ? 'admin.html' : 'dashboard.html';
+        window.location.href = redirectUrl;
+      } catch (error) {
+        showError('loginPasswordError', error.message);
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Sign In';
+      }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      clearFormMessages();
+
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      const location = document.getElementById('registerLocation').value.trim();
+
+      const btn = document.getElementById('registerBtn');
+      const btnText = document.getElementById('registerBtnText');
+      btn.disabled = true;
+      btnText.innerHTML = '<span class="loading"></span>Creating account...';
+
+      try {
+        await postJson('register', { name, email, password, location });
+        document.getElementById('registerSuccess').textContent = 'Account created! You can now sign in.';
+
+        setTimeout(() => {
+          switchToLoginTab();
+          document.getElementById('loginEmail').value = email;
+        }, 1500);
+      } catch (error) {
+        const message = error.message.toLowerCase();
+        if (message.includes('email')) {
+          showError('registerEmailError', error.message);
+        } else if (message.includes('password')) {
+          showError('registerPasswordError', error.message);
+        } else {
+          showError('registerNameError', error.message);
+        }
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Create Account';
+      }
+    });
+
+  </script>
+</body>
+</html>

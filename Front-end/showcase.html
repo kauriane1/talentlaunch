@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talent Showcase – TalentLaunch Rwanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="js/api.js?v=7"></script>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --green: #1A5C3A;
+    --green-mid: #2D7A52;
+    --green-light: #3EAA70;
+    --dark: #0D1F17;
+    --cream: #FBF7EF;
+    --sidebar-w: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F4F1;
+    display: flex;
+    min-height: 100vh;
+    color: var(--dark);
+  }
+
+  /* SIDEBAR — same as dashboard */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--dark);
+    display: flex; flex-direction: column;
+    padding: 32px 0;
+    position: fixed; top: 0; bottom: 0; left: 0; z-index: 50;
+  }
+
+  .sidebar-logo {
+    font-family: 'Playfair Display', serif; font-size: 1.1rem;
+    color: var(--gold); text-decoration: none;
+    padding: 0 28px; margin-bottom: 40px; display: block;
+  }
+
+  .sidebar-logo span { color: white; }
+  .sidebar-section { padding: 0 16px; margin-bottom: 28px; }
+
+  .sidebar-label {
+    font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 1.5px; color: rgba(255,255,255,0.25);
+    padding: 0 12px; margin-bottom: 8px;
+  }
+
+  .sidebar-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px; border-radius: 8px;
+    color: rgba(255,255,255,0.55); text-decoration: none;
+    font-size: 0.9rem; transition: background 0.2s, color 0.2s; margin-bottom: 2px;
+  }
+
+  .sidebar-link:hover { background: rgba(255,255,255,0.07); color: white; }
+  .sidebar-link.active { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .sidebar-link .icon { font-size: 1.1rem; width: 22px; }
+  .sidebar-bottom { margin-top: auto; padding: 0 16px; }
+
+  .user-pill {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px; background: rgba(255,255,255,0.06); border-radius: 10px;
+  }
+
+  .user-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-mid), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: white; font-weight: 600;
+  }
+
+  .user-name { color: white; font-size: 0.88rem; font-weight: 500; }
+  .user-role { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar-w); flex: 1; padding: 40px 44px; max-width: calc(100% - var(--sidebar-w)); }
+
+  .page-header { margin-bottom: 36px; }
+
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700; color: var(--dark);
+  }
+
+  .page-header p { color: #888; font-size: 0.9rem; margin-top: 6px; font-weight: 300; }
+
+  /* UPLOAD PANEL */
+  .upload-panel {
+    background: white; border-radius: 16px;
+    padding: 36px; margin-bottom: 36px;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .upload-panel h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; margin-bottom: 24px; color: var(--dark);
+  }
+
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+  .form-group label {
+    display: block; font-size: 0.82rem; font-weight: 500;
+    color: var(--dark); margin-bottom: 8px; letter-spacing: 0.3px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%; padding: 13px 16px;
+    border: 1.5px solid #e0e0e0; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    background: #fafafa; color: var(--dark);
+    transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(45,122,82,0.1);
+    background: white;
+  }
+
+  .form-group textarea { resize: vertical; min-height: 90px; }
+
+  .form-group.full { margin-bottom: 20px; }
+
+  .btn-submit {
+    background: var(--green); color: white;
+    padding: 13px 32px; border-radius: 8px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500;
+    cursor: pointer; transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-submit:hover { background: var(--green-mid); transform: translateY(-1px); }
+
+  /* SUCCESS TOAST */
+  .toast {
+    position: fixed; top: 24px; right: 24px;
+    background: var(--dark); color: white;
+    padding: 14px 22px; border-radius: 10px;
+    font-size: 0.88rem; border-left: 4px solid var(--green-light);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transform: translateX(120%); transition: transform 0.3s;
+    z-index: 999; max-width: 300px;
+  }
+
+  .toast.show { transform: translateX(0); }
+
+  /* GALLERY */
+  .gallery-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  }
+
+  .gallery-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700; color: var(--dark);
+  }
+
+  .gallery-count {
+    background: var(--green); color: white;
+    padding: 4px 12px; border-radius: 100px; font-size: 0.78rem; font-weight: 500;
+  }
+
+  .talent-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .talent-card {
+    background: white; border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden; transition: transform 0.25s, box-shadow 0.25s;
+    animation: popIn 0.4s ease;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .talent-card:hover { transform: translateY(-5px); box-shadow: 0 16px 50px rgba(0,0,0,0.1); }
+
+  .talent-card-top {
+    height: 100px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem;
+  }
+
+  .color-1 { background: linear-gradient(135deg, #1A5C3A, #3EAA70); }
+  .color-2 { background: linear-gradient(135deg, #8B4513, #C9832A); }
+  .color-3 { background: linear-gradient(135deg, #1a3a6c, #2c7be5); }
+  .color-4 { background: linear-gradient(135deg, #6A1A5C, #AA3E9A); }
+
+  .talent-card-body { padding: 20px; }
+
+  .tc-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .tc-desc { color: #888; font-size: 0.83rem; font-weight: 300; line-height: 1.6; margin-bottom: 14px; }
+
+  .tc-footer {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .tc-author { font-size: 0.78rem; color: #aaa; }
+  .tc-tag {
+    font-size: 0.72rem; padding: 3px 10px; border-radius: 100px;
+    background: rgba(45,122,82,0.1); color: var(--green-mid); font-weight: 500;
+  }
+
+  .empty-state {
+    text-align: center; padding: 60px 20px; color: #bbb;
+    display: none;
+  }
+
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.9rem; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; max-width: 100%; padding: 24px; }
+    .form-row-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">Talent<span>Launch</span></a>
+  <div class="sidebar-section">
+    <p class="sidebar-label">Main</p>
+    <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+    <a href="showcase.html" class="sidebar-link active"><span class="icon">⭐</span> My Showcase</a>
+    <a href="workshops.html" class="sidebar-link">
+      <span class="icon">📚</span> Workshops
+    </a>
+    <a href="mentors.html" class="sidebar-link">
+      <span class="icon">🤝</span> Mentors
+    </a>
+  </div>
+  <div class="sidebar-section">
+    <p class="sidebar-label">Account</p>
+    <a href="profile.html" class="sidebar-link">
+      <span class="icon">👤</span> Profile
+    </a>
+    <a href="settings.html" class="sidebar-link">
+      <span class="icon">⚙️</span> Settings
+    </a>
+    <a href="login.html?logout=1" class="sidebar-link sign-out"><span class="icon">🚪</span> Sign Out</a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar">YT</div>
+      <div>
+        <div class="user-name">Youth Member</div>
+        <div class="user-role">Kigali, Rwanda</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <h1>Talent Showcase</h1>
+    <p>Share your work and let the world see what you're capable of.</p>
+  </div>
+
+  <!-- UPLOAD FORM -->
+  <div class="upload-panel">
+    <h2>✨ Upload a New Talent</h2>
+    <form id="talentForm">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Talent Title</label>
+          <input type="text" id="title" placeholder="e.g. Landscape Photography" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="category">
+            <option value="🎨">🎨 Visual Arts</option>
+            <option value="💻">💻 Technology</option>
+            <option value="🎤">🎤 Public Speaking</option>
+            <option value="🎵">🎵 Music</option>
+            <option value="🚀">🚀 Business</option>
+            <option value="📝">📝 Writing</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Description</label>
+        <textarea id="description" placeholder="Tell us about your talent and what you created..." required></textarea>
+      </div>
+      <button type="submit" class="btn-submit">Share My Talent →</button>
+    </form>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="gallery-header">
+    <span class="gallery-title">Community Showcase</span>
+    <span class="gallery-count" id="countBadge">0 talents</span>
+  </div>
+
+  <div class="talent-grid" id="talentGrid">
+    <!-- Cards will be added by users -->
+  </div>
+
+  <div class="empty-state" id="emptyState" style="display:block;">
+    <div class="icon">🌟</div>
+    <p>No talents uploaded yet. Be the first to share yours!</p>
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Talent uploaded successfully!</div>
+
+<script>
+  function showToast(message, isError = true) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.style.background = isError ? '#4c0f0f' : '#1f7a1f';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  function initShowcase() {
+    if (!window.API) {
+      showToast('API library did not load. Refresh the page.', true);
+      return;
+    }
+    const loggedIn = window.API?.isLoggedIn ? API.isLoggedIn() : !!localStorage.getItem('token');
+    if (!loggedIn) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const colors = ['color-1','color-2','color-3','color-4'];
+    let count = 0;
+
+    function updateCount() {
+      const badge = document.getElementById('countBadge');
+      badge.textContent = count + ' talent' + (count !== 1 ? 's' : '');
+    }
+
+    function renderTalentCard(talent) {
+      const card = document.createElement('div');
+      card.className = 'talent-card';
+      const color = colors[count % colors.length];
+      card.innerHTML = `
+        <div class="talent-card-top ${color}">${talent.category || '🎨'}</div>
+        <div class="talent-card-body">
+          <div class="tc-title">${talent.title}</div>
+          <div class="tc-desc">${talent.description}</div>
+          <div class="tc-footer">
+            <span class="tc-author">by ${talent.author_name || 'You'}</span>
+            <span class="tc-tag">${talent.category || 'Uncategorized'}</span>
+          </div>
+        </div>
+      `;
+      document.getElementById('talentGrid').prepend(card);
+      count++;
+      updateCount();
+    }
+
+    async function loadTalents() {
+      try {
+        const result = await API.getTalents();
+        const grid = document.getElementById('talentGrid');
+        grid.innerHTML = '';
+        count = 0;
+
+        if (result.talents && result.talents.length > 0) {
+          document.getElementById('emptyState').style.display = 'none';
+          result.talents.forEach(talent => renderTalentCard(talent));
+        } else {
+          document.getElementById('emptyState').style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Could not load talents:', err);
+        document.getElementById('emptyState').style.display = 'block';
+      }
+    }
+
+    updateCount();
+    loadTalents();
+
+    document.getElementById('talentForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const title = document.getElementById('title').value.trim();
+      const desc = document.getElementById('description').value.trim();
+      const cat = document.getElementById('category').value;
+
+      if (!title || !desc) return;
+
+      try {
+        await API.createTalent({ title, description: desc, category: cat });
+        document.getElementById('title').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('category').selectedIndex = 0;
+
+        renderTalentCard({ title, description: desc, category: cat, author_name: 'You' });
+        document.getElementById('emptyState').style.display = 'none';
+        showToast('✅ Talent saved successfully!', false);
+
+        await loadTalents();
+      } catch (err) {
+        console.error('Talent submission failed:', err);
+        showToast(`❌ ${err.message || 'Unable to save talent. Please try again.'}`, true);
+      }
+    });
+  }
+
+  if (typeof ensureApiReady === 'function') {
+    ensureApiReady(initShowcase);
+  } else {
+    document.addEventListener('DOMContentLoaded', initShowcase);
+  }
+</script>
+
+</body>
+</html>

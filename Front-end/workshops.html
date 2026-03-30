@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshops – TalentLaunch Rwanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="/js/api.js"></script>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --green: #1A5C3A;
+    --green-mid: #2D7A52;
+    --green-light: #3EAA70;
+    --dark: #0D1F17;
+    --cream: #FBF7EF;
+    --sidebar-w: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F4F1;
+    display: flex;
+    min-height: 100vh;
+    color: var(--dark);
+  }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    z-index: 50;
+  }
+
+  .sidebar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    text-decoration: none;
+    padding: 0 28px;
+    margin-bottom: 40px;
+    display: block;
+  }
+
+  .sidebar-logo span { color: white; }
+
+  .sidebar-section {
+    padding: 0 16px;
+    margin-bottom: 28px;
+  }
+
+  .sidebar-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.25);
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-link:hover { background: rgba(255,255,255,0.07); color: white; }
+  .sidebar-link.active { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .sidebar-link .icon { font-size: 1.1rem; width: 22px; }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 0 16px;
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-mid), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: white; font-weight: 600;
+  }
+
+  .user-name { color: white; font-size: 0.88rem; font-weight: 500; }
+  .user-role { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 40px 44px;
+    max-width: calc(100% - var(--sidebar-w));
+  }
+
+  .page-header { margin-bottom: 36px; }
+
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .page-header p { color: #888; font-size: 0.9rem; margin-top: 6px; font-weight: 300; }
+
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 10px 18px;
+    border: 1.5px solid var(--green-mid);
+    border-radius: 8px;
+    background: white;
+    color: var(--green-mid);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--green-mid);
+    color: white;
+  }
+
+  .workshops-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .workshop-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .workshop-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 50px rgba(0,0,0,0.1);
+  }
+
+  .workshop-hero {
+    height: 140px;
+    background: linear-gradient(135deg, var(--green-mid), var(--green-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: rgba(255,255,255,0.9);
+  }
+
+  .workshop-card-body {
+    padding: 24px;
+  }
+
+  .wc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .wc-desc {
+    color: #888;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .wc-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 16px;
+  }
+
+  .ws-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    width: fit-content;
+  }
+
+  .ws-status.live {
+    background: rgba(62,170,112,0.12);
+    color: var(--green-mid);
+  }
+
+  .ws-status.upcoming {
+    background: rgba(201,168,76,0.12);
+    color: #9a7a28;
+  }
+
+  .ws-status.completed {
+    background: rgba(150,150,150,0.12);
+    color: #666;
+  }
+
+  .ws-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .btn-enroll {
+    flex: 1;
+    padding: 10px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-enroll:hover { background: var(--green-mid); }
+
+  .btn-unenroll {
+    flex: 1;
+    padding: 10px;
+    background: rgba(192,80,77,0.1);
+    color: #c0504d;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-unenroll:hover {
+    background: #c0504d;
+    color: white;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: #bbb;
+  }
+
+  .empty-state .icon { font-size: 4rem; margin-bottom: 16px; }
+  .empty-state p { font-size: 0.95rem; }
+
+  .toast {
+    position: fixed; top: 24px; right: 24px;
+    background: var(--dark); color: white;
+    padding: 14px 22px; border-radius: 10px;
+    font-size: 0.88rem; border-left: 4px solid var(--green-light);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transform: translateX(120%); transition: transform 0.3s;
+    z-index: 999; max-width: 300px;
+  }
+
+  .toast.show { transform: translateX(0); }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; max-width: 100%; padding: 24px; }
+    .workshops-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">Talent<span>Launch</span></a>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Main</p>
+    <a href="dashboard.html" class="sidebar-link">
+      <span class="icon">🏠</span> Dashboard
+    </a>
+    <a href="showcase.html" class="sidebar-link">
+      <span class="icon">⭐</span> My Showcase
+    </a>
+    <a href="workshops.html" class="sidebar-link active">
+      <span class="icon">📚</span> Workshops
+    </a>
+    <a href="mentors.html" class="sidebar-link">
+      <span class="icon">🤝</span> Mentors
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Account</p>
+    <a href="profile.html" class="sidebar-link">
+      <span class="icon">👤</span> Profile
+    </a>
+    <a href="settings.html" class="sidebar-link">
+      <span class="icon">⚙️</span> Settings
+    </a>
+    <a href="login.html?logout=1" class="sidebar-link sign-out">
+      <span class="icon">🚪</span> Sign Out
+    </a>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar">YT</div>
+      <div>
+        <div class="user-name">Youth Member</div>
+        <div class="user-role">Kigali, Rwanda</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <h1>📚 Workshops</h1>
+    <p>Learn new skills from industry experts through hands-on workshops.</p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterWorkshops('all', event)">All Workshops</button>
+    <button class="filter-btn" onclick="filterWorkshops('upcoming', event)">Upcoming</button>
+    <button class="filter-btn" onclick="filterWorkshops('live', event)">Live Now</button>
+    <button class="filter-btn" onclick="filterWorkshops('completed', event)">Completed</button>
+  </div>
+
+  <div class="workshops-grid" id="workshopsGrid">
+    <!-- Cards will be added by JavaScript -->
+  </div>
+
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="icon">📚</div>
+    <p>No workshops available. Check back soon!</p>
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Check authentication
+  if (!API.isLoggedIn()) {
+    window.location.href = 'login.html';
+  }
+
+  let currentUser = null;
+  let allWorkshops = [];
+  let currentFilter = 'all';
+
+  // Initialize
+  async function initialize() {
+    try {
+      const userData = await API.getMe();
+      currentUser = userData.user;
+      updateUserInfo(userData.user);
+      await loadWorkshops();
+    } catch (error) {
+      console.error('Failed to initialize:', error);
+      if (error.message.includes('expired') || error.message.includes('invalid')) {
+        API.logout();
+      }
+    }
+  }
+
+  function updateUserInfo(user) {
+    const userPill = document.querySelector('.user-pill');
+    const avatar = userPill.querySelector('.user-avatar');
+    const name = userPill.querySelector('.user-name');
+    const role = userPill.querySelector('.user-role');
+
+    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    if (user.avatar_url) {
+      avatar.innerHTML = `<img src="${user.avatar_url}" alt="${user.name} avatar">`;
+    } else {
+      avatar.textContent = initials;
+    }
+
+    name.textContent = user.name;
+    role.textContent = user.location || 'Rwanda';
+  }
+
+  async function loadWorkshops() {
+    try {
+      const data = await API.getWorkshops();
+      allWorkshops = data.workshops || [];
+      renderWorkshops();
+    } catch (error) {
+      console.error('Failed to load workshops:', error);
+    }
+  }
+
+  function renderWorkshops() {
+    const grid = document.getElementById('workshopsGrid');
+    const emptyState = document.getElementById('emptyState');
+    
+    grid.innerHTML = '';
+
+    let filtered = allWorkshops;
+    if (currentFilter !== 'all') {
+      filtered = allWorkshops.filter(w => w.status === currentFilter);
+    }
+
+    if (filtered.length === 0) {
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+
+    filtered.forEach(workshop => {
+      const card = document.createElement('div');
+      card.className = 'workshop-card';
+      
+      const date = new Date(workshop.date).toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const isEnrolled = false; // This would check enrollment status from user data
+      const statusClass = workshop.status;
+      const statusText = workshop.status.charAt(0).toUpperCase() + workshop.status.slice(1);
+
+      card.innerHTML = `
+        <div class="workshop-hero">📚</div>
+        <div class="workshop-card-body">
+          <div class="wc-title">${workshop.title}</div>
+          <div class="wc-desc">${workshop.description}</div>
+          <div class="wc-meta">
+            <div>📅 ${date}</div>
+            <div>👨‍🏫 ${workshop.mentor_name || 'TBA'}</div>
+            <div>📍 ${workshop.location || 'Online'}</div>
+            <div>👥 Capacity: ${workshop.capacity}</div>
+          </div>
+          <span class="ws-status ${statusClass}">${statusText}</span>
+          <div class="ws-actions">
+            ${!isEnrolled ? `
+              <button class="btn-enroll" onclick="enrollWorkshop(${workshop.id})">Enroll Now</button>
+            ` : `
+              <button class="btn-unenroll" onclick="unenrollWorkshop(${workshop.id})">Unenroll</button>
+            `}
+          </div>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+  }
+
+  function filterWorkshops(status, event) {
+    currentFilter = status;
+    
+    // Update UI
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    if (event?.target) {
+      event.target.classList.add('active');
+    }
+
+    renderWorkshops();
+  }
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'workshop_updated') {
+      loadWorkshops();
+    }
+  });
+
+  async function enrollWorkshop(workshopId) {
+    try {
+      await API.enrollInWorkshop(workshopId);
+      showToast('✅ Successfully enrolled in workshop!');
+      await loadWorkshops();
+    } catch (error) {
+      console.error('Failed to enroll:', error);
+      showToast('❌ Failed to enroll in workshop');
+    }
+  }
+
+  async function unenrollWorkshop(workshopId) {
+    if (!confirm('Are you sure you want to unenroll?')) return;
+    
+    try {
+      await API.unenrollFromWorkshop(workshopId);
+      showToast('✅ Successfully unenrolled from workshop!');
+      await loadWorkshops();
+    } catch (error) {
+      console.error('Failed to unenroll:', error);
+      showToast('❌ Failed to unenroll from workshop');
+    }
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  initialize();
+</script>
+
+</body>
+</html>

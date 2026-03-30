@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings – TalentLaunch Rwanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="/js/api.js"></script>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --green: #1A5C3A;
+    --green-mid: #2D7A52;
+    --green-light: #3EAA70;
+    --dark: #0D1F17;
+    --cream: #FBF7EF;
+    --sidebar-w: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F4F1;
+    display: flex;
+    min-height: 100vh;
+    color: var(--dark);
+  }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    z-index: 50;
+  }
+
+  .sidebar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    text-decoration: none;
+    padding: 0 28px;
+    margin-bottom: 40px;
+    display: block;
+  }
+
+  .sidebar-logo span { color: white; }
+
+  .sidebar-section {
+    padding: 0 16px;
+    margin-bottom: 28px;
+  }
+
+  .sidebar-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.25);
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-link:hover { background: rgba(255,255,255,0.07); color: white; }
+  .sidebar-link.active { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .sidebar-link .icon { font-size: 1.1rem; width: 22px; }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 0 16px;
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-mid), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: white; font-weight: 600;
+  }
+
+  .user-name { color: white; font-size: 0.88rem; font-weight: 500; }
+  .user-role { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 40px 44px;
+    max-width: calc(100% - var(--sidebar-w));
+  }
+
+  .page-header { margin-bottom: 36px; }
+
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .page-header p { color: #888; font-size: 0.9rem; margin-top: 6px; font-weight: 300; }
+
+  .settings-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+    max-width: 600px;
+  }
+
+  .settings-section {
+    padding: 32px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .settings-section:last-child { border-bottom: none; }
+
+  .settings-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--dark);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group:last-child { margin-bottom: 0; }
+
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--dark);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    background: #fafafa;
+    color: var(--dark);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(45,122,82,0.1);
+    background: white;
+  }
+
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .toggle-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .toggle-group:last-child { margin-bottom: 0; }
+
+  .toggle-label {
+    font-size: 0.9rem;
+    color: var(--dark);
+    font-weight: 500;
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 28px;
+    background: #ddd;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .toggle-switch.active { background: var(--green); }
+
+  .toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: left 0.2s;
+  }
+
+  .toggle-switch.active .toggle-slider { left: 24px; }
+
+  .btn-save {
+    background: var(--green);
+    color: white;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+    width: 100%;
+  }
+
+  .btn-save:hover { background: var(--green-mid); }
+
+  .btn-danger {
+    background: rgba(220,80,80,0.1);
+    color: #c0504d;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .btn-danger:hover {
+    background: #c0504d;
+    color: white;
+  }
+
+  .toast {
+    position: fixed; top: 24px; right: 24px;
+    background: var(--dark); color: white;
+    padding: 14px 22px; border-radius: 10px;
+    font-size: 0.88rem; border-left: 4px solid var(--green-light);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transform: translateX(120%); transition: transform 0.3s;
+    z-index: 999; max-width: 300px;
+  }
+
+  .toast.show { transform: translateX(0); }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; max-width: 100%; padding: 24px; }
+    .settings-card { max-width: 100%; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">Talent<span>Launch</span></a>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Main</p>
+    <a href="dashboard.html" class="sidebar-link">
+      <span class="icon">🏠</span> Dashboard
+    </a>
+    <a href="showcase.html" class="sidebar-link">
+      <span class="icon">⭐</span> My Showcase
+    </a>
+    <a href="workshops.html" class="sidebar-link">
+      <span class="icon">📚</span> Workshops
+    </a>
+    <a href="mentors.html" class="sidebar-link">
+      <span class="icon">🤝</span> Mentors
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Account</p>
+    <a href="profile.html" class="sidebar-link">
+      <span class="icon">👤</span> Profile
+    </a>
+    <a href="settings.html" class="sidebar-link active">
+      <span class="icon">⚙️</span> Settings
+    </a>
+    <a href="login.html?logout=1" class="sidebar-link sign-out">
+      <span class="icon">🚪</span> Sign Out
+    </a>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar">YT</div>
+      <div>
+        <div class="user-name">Youth Member</div>
+        <div class="user-role">Kigali, Rwanda</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <h1>⚙️ Settings</h1>
+    <p>Manage your account preferences and profile information.</p>
+  </div>
+
+  <div class="settings-card">
+    <!-- PROFILE SETTINGS -->
+    <div class="settings-section">
+      <div class="settings-title">Profile Information</div>
+      <form id="settingsForm">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="name" placeholder="Your full name" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="your.email@example.com" required>
+        </div>
+        <div class="form-group">
+          <label>Profile Picture</label>
+          <input type="file" id="avatar" accept="image/*">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="location" placeholder="e.g., Kigali, Rwanda">
+          </div>
+          <div class="form-group">
+            <label>Role (read-only)</label>
+            <input type="text" id="role" placeholder="Youth Member" readonly>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Bio</label>
+          <textarea id="bio" placeholder="Tell us about yourself..."></textarea>
+        </div>
+        <button type="submit" class="btn-save">Save Changes</button>
+      </form>
+    </div>
+
+    <!-- PREFERENCES -->
+    <div class="settings-section">
+      <div class="settings-title">Preferences</div>
+      <div class="toggle-group">
+        <span class="toggle-label">📧 Email Notifications</span>
+        <div class="toggle-switch active" onclick="toggleSwitch(this)">
+          <div class="toggle-slider"></div>
+        </div>
+      </div>
+      <div class="toggle-group">
+        <span class="toggle-label">🔔 Workshop Reminders</span>
+        <div class="toggle-switch active" onclick="toggleSwitch(this)">
+          <div class="toggle-slider"></div>
+        </div>
+      </div>
+      <div class="toggle-group">
+        <span class="toggle-label">👁️ Show Profile Publicly</span>
+        <div class="toggle-switch active" onclick="toggleSwitch(this)">
+          <div class="toggle-slider"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT ACTIONS -->
+    <div class="settings-section">
+      <div class="settings-title">Account Actions</div>
+      <p style="color: #888; font-size: 0.9rem; margin-bottom: 20px;">For security reasons, you can change your password through the login page.</p>
+      <button class="btn-danger" onclick="logout()">Sign Out of All Devices</button>
+      <button class="btn-danger" onclick="deleteAccount()">Delete Account</button>
+    </div>
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Check authentication
+  if (!API.isLoggedIn()) {
+    window.location.href = 'login.html';
+  }
+
+  let currentUser = null;
+
+  // Initialize
+  async function initialize() {
+    try {
+      const userData = await API.getMe();
+      currentUser = userData.user;
+      updateUserInfo(userData.user);
+      loadSettings(userData.user);
+
+      document.getElementById('settingsForm').addEventListener('submit', saveSettings);
+    } catch (error) {
+      console.error('Failed to initialize:', error);
+      if (error.message.includes('expired') || error.message.includes('invalid')) {
+        API.logout();
+      }
+    }
+  }
+
+  function updateUserInfo(user) {
+    const userPill = document.querySelector('.user-pill');
+    const avatar = userPill.querySelector('.user-avatar');
+    const name = userPill.querySelector('.user-name');
+    const role = userPill.querySelector('.user-role');
+
+    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    if (user.avatar_url) {
+      avatar.innerHTML = `<img src="${user.avatar_url}" alt="${user.name} avatar">`;
+    } else {
+      avatar.textContent = initials;
+    }
+
+    name.textContent = user.name;
+    role.textContent = user.location || 'Rwanda';
+  }
+
+  function loadSettings(user) {
+    document.getElementById('name').value = user.name;
+    document.getElementById('email').value = user.email;
+    document.getElementById('location').value = user.location || '';
+    document.getElementById('role').value = user.role === 'admin' ? 'Admin' : 'Youth Member';
+    document.getElementById('bio').value = user.bio || '';
+  }
+
+  async function saveSettings(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const bio = document.getElementById('bio').value.trim();
+    const avatarFile = document.getElementById('avatar').files[0];
+
+    if (!name || !email) {
+      showToast('❌ Name and email are required');
+      return;
+    }
+
+    try {
+      const profileData = { name, email, location, bio };
+      const result = await API.updateProfile(profileData, avatarFile);
+
+      if (result.token) {
+        API.setToken(result.token);
+      }
+
+      currentUser = result.user;
+      updateUserInfo(currentUser);
+      loadSettings(currentUser);
+      showToast('✅ Settings saved successfully!');
+
+      localStorage.setItem('profile_updated', Date.now());
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      showToast('❌ Failed to save settings: ' + (error.message || 'Please try again.'));
+    }
+  }
+
+  function toggleSwitch(element) {
+    element.classList.toggle('active');
+  }
+
+  function logout() {
+    if (confirm('Are you sure? You will be logged out of all devices.')) {
+      API.logout();
+    }
+  }
+
+  function deleteAccount() {
+    const confirmed = confirm('⚠️ Are you sure you want to delete your account? This action cannot be undone!');
+    if (confirmed) {
+      const doubleConfirmed = confirm('This will permanently delete your account and all associated data. Type "DELETE" to confirm.');
+      if (doubleConfirmed) {
+        showToast('❌ Account deletion not yet implemented');
+      }
+    }
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  initialize();
+</script>
+
+</body>
+</html>
